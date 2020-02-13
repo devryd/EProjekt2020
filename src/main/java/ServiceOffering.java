@@ -1,12 +1,15 @@
 import java.util.ArrayList;
 
 public class ServiceOffering {
+
     // must have
-    final String name, id, description;
-    final boolean bindable;
-    final ArrayList<ServicePlan> plans;
+
+    final private String name, id, description;
+    final private boolean bindable;
+    final private ArrayList<ServicePlan> plans;
 
     // optional
+
     private ArrayList<String> tags;
     private ArrayList<String> requires;
     private boolean instances_retrievable;
@@ -29,6 +32,7 @@ public class ServiceOffering {
     // GETTER AND SETTER
 
     // must have
+
     public String getName() {
         return name;
     }
