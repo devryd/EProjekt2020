@@ -18,9 +18,9 @@
     <dependencies>
         <!-- Spring MVC -->
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>4.3.26.RELEASE</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>2.2.4.RELEASE</version>
         </dependency>
 
         <!-- ToDo -->
@@ -28,12 +28,13 @@
 
         <!-- Spring Security -->
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-core</artifactId>
-            <version>4.2.14.RELEASE</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>2.2.4.RELEASE</version>
         </dependency>
 
         <!-- Microbean Helm -->
+
         <dependency>
             <groupId>org.microbean</groupId>
             <artifactId>microbean-helm</artifactId>
