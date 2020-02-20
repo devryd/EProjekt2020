@@ -10,7 +10,7 @@ public class ServicePlan {
     private boolean free;
     private boolean bindable;
     private boolean plan_updateable;
-    //private Schemas schemas;
+    private Schemas schemas;
     private int maximum_polling_duration;
     //private MaintenanceInfo maintenance_info;
 

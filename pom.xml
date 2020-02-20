@@ -4,9 +4,56 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <properties>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+    </properties>
+
     <groupId>de.giesebrecht.broker</groupId>
     <artifactId>broker</artifactId>
     <version>0.001</version>
+
+    <!--
+    <build>
+        <plugins>
+            <plugin>
+    <dependency>
+        <groupId>com.github.everit-org.json-schema</groupId>
+        <artifactId>org.everit.json.schema</artifactId>
+        <version>1.12.1</version>
+    </dependency>
+            </plugin>
+        </plugins>
+    </build>
+    -->
+
+    <dependencies>
+
+        <!--
+       <dependency>
+            <groupId>com.github.erosb</groupId>
+            <artifactId>everit-json-schema-jdk6</artifactId>
+            <version>1.9.2</version>
+        </dependency>
+        -->
+        <dependency>
+            <groupId>com.github.everit-org.json-schema</groupId>
+            <artifactId>org.everit.json.schema</artifactId>
+            <version>1.12.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.erosb</groupId>
+            <artifactId>everit-json-schema-jdk6</artifactId>
+            <version>1.9.2</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
 
 </project>
