@@ -4,6 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+
     <groupId>de.thbin.epro-broker</groupId>
     <artifactId>osb-kubernetes</artifactId>
     <packaging>pom</packaging>
@@ -16,8 +17,10 @@
     </modules>
 
     <properties>
+
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+
     </properties>
 
     <dependencies>
@@ -52,7 +55,27 @@
         </dependency>
 
 
+        <!-- JSON obj -->
+        <dependency>
+            <groupId>com.github.everit-org.json-schema</groupId>
+            <artifactId>org.everit.json.schema</artifactId>
+            <version>1.12.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.erosb</groupId>
+            <artifactId>everit-json-schema-jdk6</artifactId>
+            <version>1.9.2</version>
+        </dependency>
+
     </dependencies>
+
+    <!-- JSON obj -->
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <build>
         <extensions>
@@ -63,7 +86,6 @@
             </extension>
         </extensions>
     </build>
-
 
 
 </project>
