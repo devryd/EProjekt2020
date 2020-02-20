@@ -15,6 +15,11 @@
         <module>helm</module>
     </modules>
 
+    <properties>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
+    </properties>
+
     <dependencies>
         <!-- Spring MVC -->
         <dependency>
@@ -34,7 +39,6 @@
         </dependency>
 
         <!-- Microbean Helm -->
-
         <dependency>
             <groupId>org.microbean</groupId>
             <artifactId>microbean-helm</artifactId>
@@ -48,6 +52,17 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <extensions>
+            <extension>
+                <groupId>kr.motd.maven</groupId>
+                <artifactId>os-maven-plugin</artifactId>
+                <version>1.6.1</version>
+            </extension>
+        </extensions>
+    </build>
+
 
 
 </project>
