@@ -1,5 +1,6 @@
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.loader.SchemaLoader;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -16,37 +17,14 @@ public class InputParameterSchema {
     // CONSTRUCTOR
 
     public InputParameterSchema() {
-
-    }
-
-    // Setting the Schema as required
-
-    public void createServiceInstance() {
         try {
-            InputStream schemaInput = new FileInputStream("src/main/java/CreateServiceInstance.json");
+            InputStream schemaInput = new FileInputStream("src/main/java/ServiceSchema.json");
             parameters = new JSONObject(new JSONTokener(schemaInput));
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public void updateServiceInstance() {
-        try {
-            InputStream schemaInput = new FileInputStream("src/main/java/UpdateServiceInstance.json");
-            parameters = new JSONObject(new JSONTokener(schemaInput));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void createServiceBinding() {
-        try {
-            InputStream schemaInput = new FileInputStream("src/main/java/CreateServiceBinding.json");
-            parameters = new JSONObject(new JSONTokener(schemaInput));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
 
 
