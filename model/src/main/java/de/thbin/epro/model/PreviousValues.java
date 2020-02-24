@@ -1,3 +1,5 @@
+package de.thbin.epro;
+
 public class PreviousValues {
     String service_id;
     String plan_id;

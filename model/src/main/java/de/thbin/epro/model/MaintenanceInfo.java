@@ -1,3 +1,5 @@
+package de.thbin.epro;
+
 public class MaintenanceInfo {
 
     //  must have

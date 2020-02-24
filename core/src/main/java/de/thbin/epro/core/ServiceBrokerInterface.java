@@ -1,3 +1,5 @@
+package de.thbin.epro;
+
 import org.springframework.http.ResponseEntity;
 
 public interface ServiceBrokerInterface {

@@ -1,3 +1,5 @@
+package de.thbin.epro;
+
 import java.util.ArrayList;
 
 public class ServiceOffering {

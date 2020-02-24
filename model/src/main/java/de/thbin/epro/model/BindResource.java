@@ -1,3 +1,5 @@
+package de.thbin.epro;
+
 public class BindResource {
     String app_guid;
     String route;
