@@ -1,13 +1,9 @@
-import com.google.api.Http;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import javax.swing.*;
 import java.util.Random;
 
 @EnableWebSecurity
@@ -34,7 +30,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         int targetStringLength = 10;
         Random random = new Random();
         StringBuilder stringBuilder = new StringBuilder();
-        
+
         for (int i = 0; i < targetStringLength; i++) {
             stringBuilder.append(random.ints(leftLimit, rightLimit+1).toString());
         }
