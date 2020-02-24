@@ -20,15 +20,16 @@ import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import org.microbean.helm.ReleaseManager;
 import org.microbean.helm.Tiller;
 import org.microbean.helm.chart.URLChartLoader;
+import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
+/**@author Jannik Nöldner
+ *
+ */
+@Service
 public class HelmDeployer {
 
-    public static final int SMALL_SIZE = 0;
-    public static final int STANDARD_SIZE = 1;
-    public static final int CLUSTER_SIZE = 2;
-
-    public void buildChart(int size) throws IOException, ExecutionException, InterruptedException {
+    public void buildChart(DeploymentSize size) throws IOException, ExecutionException, InterruptedException {
         final URI uri = URI.create("file:///C:/Users/JNoel/Documents/helm-charts/simple-redis-cluster");
         assert uri != null;
         final URL url = uri.toURL();
@@ -45,23 +46,18 @@ public class HelmDeployer {
             final InstallReleaseRequest.Builder requestBuilder = InstallReleaseRequest.newBuilder();
             assert requestBuilder != null;
             requestBuilder.setTimeout(300L);
-            requestBuilder.setName("test40");
+            requestBuilder.setName("test10");
             requestBuilder.setWait(true);
             Map<String, Object> values = null;
 
             switch (size) {
-                case SMALL_SIZE:
+                case SMALL:
                     values = buildSmallSizeChartValues();
-                    System.out.println("building small size");
                     break;
-                case CLUSTER_SIZE:
+                case CLUSTER:
                     values = buildClusterSizeChartValues();
-                    System.out.println("building cluster size");
                     break;
-                default:
-                    if (size != STANDARD_SIZE) {
-                        System.out.println("Unknown size value. Building Standard size");
-                    }
+                case STANDARD:
                     values = new LinkedHashMap<String, Object>();
             }
 
