@@ -1,4 +1,3 @@
-package helm;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -16,6 +15,7 @@ import hapi.release.ReleaseOuterClass;
 import hapi.release.ReleaseOuterClass.Release;
 import hapi.services.tiller.Tiller.InstallReleaseRequest;
 import hapi.services.tiller.Tiller.InstallReleaseResponse;
+import helm.DeploymentSize;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import org.microbean.helm.ReleaseManager;
 import org.microbean.helm.Tiller;
@@ -28,6 +28,7 @@ import org.yaml.snakeyaml.Yaml;
  */
 @Service
 public class HelmDeployer {
+    private Release instanceRelease;
 
     public void buildChart(DeploymentSize size) throws IOException, ExecutionException, InterruptedException {
         final URI uri = URI.create("file:///C:/Users/JNoel/Documents/helm-charts/simple-redis-cluster");
@@ -46,7 +47,7 @@ public class HelmDeployer {
             final InstallReleaseRequest.Builder requestBuilder = InstallReleaseRequest.newBuilder();
             assert requestBuilder != null;
             requestBuilder.setTimeout(300L);
-            requestBuilder.setName("test10");
+            requestBuilder.setName("test12");
             requestBuilder.setWait(true);
             Map<String, Object> values = null;
 
@@ -67,13 +68,16 @@ public class HelmDeployer {
             assert releaseFuture != null;
             final Release release = releaseFuture.get().getRelease();
             assert release != null;
+            instanceRelease = release;
         }
     }
+
     private LinkedHashMap<String, Object> buildClusterSizeChartValues() {
         LinkedHashMap<String, Object> clusterValueMap = new LinkedHashMap<String, Object>();
         clusterValueMap.put("replicaCount", 3);
         return clusterValueMap;
     }
+
     private LinkedHashMap<String, Object> buildSmallSizeChartValues() {
         LinkedHashMap<String, Object> smallSizeValueMap = new LinkedHashMap<String, Object>();
         LinkedHashMap<String, Object> resources = new LinkedHashMap<String, Object>();
