@@ -12,7 +12,7 @@ public class ServicePlan {
     private boolean plan_updateable;
     private Schemas schemas;
     private int maximum_polling_duration;
-    //private MaintenanceInfo maintenance_info;
+    private MaintenanceInfo maintenance_info;
 
     // CONSTRUCTOR
 
