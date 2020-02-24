@@ -5,36 +5,47 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.swing.*;
+import java.util.Random;
 
 @EnableWebSecurity
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    // create two global users
+    SpringSecurityConfig() {
+        super();
+        generatePassword();
+    }
+
+    // create global admin user
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-            .withUser("user").password("password").roles("USER")
-            .and()
-            .withUser("admin").password("adminpass").roles("USER", "ADMIN");
+            .withUser("admin").password(passwordEncoder.encode(password)).roles("USER", "ADMIN");
     }
 
-    // secure endpoints w/ basic http auth
-    public void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                    .antMatchers(HttpMethod.DELETE, "/v2/service_instances/**").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.GET, "v2/service_instance/**/service_bindings/**").hasRole("USER")
-                    .antMatchers(HttpMethod.PUT, "v2/service_instance/**/service_bindings/**").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.PATCH, "v2/service_instances/**").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.GET, "v2/service_instances/**").hasRole("USER")
-                    .antMatchers(HttpMethod.PUT, "v2/service_instances/**").hasRole("ADMIN")
-                    .antMatchers(HttpMethod.GET, "v2/service_instances/**/service_bindings/**/last_operation").hasRole("USER")
-                    .antMatchers(HttpMethod.GET, "/v2/service_instances/**/last_operation").hasRole("USER")
-                    .antMatchers(HttpMethod.GET, "/v2/catalog").hasRole("USER")
-                .and()
-                .formLogin()
-                .and()
-                .httpBasic();
+    // ToDo random pw generate + print
+    // lower case-letters a->z (97-122)
+    // 10 chars
+    private void generatePassword() {
+        int leftLimit = 97;
+        int rightLimit = 122;
+        int targetStringLength = 10;
+        Random random = new Random();
+        StringBuilder stringBuilder = new StringBuilder();
+        
+        for (int i = 0; i < targetStringLength; i++) {
+            stringBuilder.append(random.ints(leftLimit, rightLimit+1).toString());
+        }
+        password = stringBuilder.toString();
+        System.out.println("Auto-generated password:" + password);
     }
+
+    // password encoder
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    // password
+    private String password;
 
 }
