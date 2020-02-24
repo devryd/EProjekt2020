@@ -1,4 +1,6 @@
-package src.main.java.de.thbin.epro.model;
+package de.thbin.epro;
+
+
 
 public class ServiceCatalog {
 
