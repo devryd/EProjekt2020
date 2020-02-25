@@ -14,31 +14,35 @@
         <module>model</module>
         <module>security</module>
         <module>helm</module>
+        <module>redis</module>
     </modules>
 
-    <properties>
+    <!-- Spring Boot Starter Parent -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.2.4.RELEASE</version>
+    </parent>
 
+    <!-- properties -->
+    <properties>
+        <!-- set maven compiler version to 1.8 -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-
     </properties>
 
+    <!-- dependencies -->
     <dependencies>
-        <!-- Spring MVC -->
+        <!-- Spring Boot Starter Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>2.2.4.RELEASE</version>
         </dependency>
 
-        <!-- ToDo -->
-        <!-- Spring JPA/MONGODB -->
-
-        <!-- Spring Security -->
+        <!-- Spring Boot Starter Security -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-            <version>2.2.4.RELEASE</version>
         </dependency>
 
         <!-- Microbean Helm -->
@@ -47,6 +51,7 @@
             <artifactId>microbean-helm</artifactId>
             <version>2.8.2.1.1.1</version>
         </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -54,6 +59,12 @@
             <version>2.10.2</version>
         </dependency>
 
+        <!-- JavaDoc -->
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.1.1</version>
+        </dependency>
 
         <!-- JSON obj -->
         <dependency>
@@ -61,6 +72,8 @@
             <artifactId>org.everit.json.schema</artifactId>
             <version>1.12.1</version>
         </dependency>
+
+        <!-- JSON obj -->
         <dependency>
             <groupId>com.github.erosb</groupId>
             <artifactId>everit-json-schema-jdk6</artifactId>
@@ -69,14 +82,16 @@
 
     </dependencies>
 
-    <!-- JSON obj -->
+    <!-- external repos -->
     <repositories>
+        <!-- JSON obj -->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
+    <!-- build extensions -->
     <build>
         <extensions>
             <extension>
@@ -86,6 +101,5 @@
             </extension>
         </extensions>
     </build>
-
 
 </project>
