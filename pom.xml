@@ -59,6 +59,13 @@
             <version>2.10.2</version>
         </dependency>
 
+        <!-- JavaDoc -->
+        <dependency>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+
         <!-- JSON obj -->
         <dependency>
             <groupId>com.github.everit-org.json-schema</groupId>
@@ -72,7 +79,6 @@
             <artifactId>everit-json-schema-jdk6</artifactId>
             <version>1.9.2</version>
         </dependency>
-
 
     </dependencies>
 
