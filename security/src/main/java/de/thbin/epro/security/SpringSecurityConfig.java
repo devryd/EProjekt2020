@@ -8,22 +8,37 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Random;
 
+/**
+ * This class overwrites Spring standard Security Configuration
+ *
+ * @author  Christian Gebhard
+ */
 @EnableWebSecurity
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
-
+    /**
+     * constructor
+     * calls ctor of super class
+     * invokes method to generate a random password and print it
+     */
     SpringSecurityConfig() {
         super();
         generatePassword();
     }
 
-    // create global admin user
+    /**
+     * create a global admin user to secure every rest endpoint
+     * @param AuthenticationManagerBuilder
+     */
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
             .withUser("admin").password(passwordEncoder.encode(password)).roles("USER", "ADMIN");
     }
 
-    // generate random password and print to console
+    /**
+     * random password generator
+     * prints out the generated password to console
+     */
     private void generatePassword() {
         String chars = "abcdefghijklmnopqrstuvwxyz";
         StringBuilder salt = new StringBuilder();
@@ -37,9 +52,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         System.out.println("Auto-generated password: " + password);
     }
 
-    // password encoder
+    /**
+     * password Encoder
+     */
     private PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    // password
+    /**
+     * random generated password
+     */
     private String password;
 
 }
