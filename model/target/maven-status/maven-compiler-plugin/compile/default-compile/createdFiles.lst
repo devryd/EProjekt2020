@@ -1,0 +1,16 @@
+de\thbin\epro\model\UpdateRequestBody.class
+de\thbin\epro\model\ServiceOffering.class
+de\thbin\epro\model\FetchResponseBody.class
+de\thbin\epro\model\BindRequestBody.class
+de\thbin\epro\model\PollBody.class
+de\thbin\epro\model\PreviousValues.class
+de\thbin\epro\model\Schemas.class
+de\thbin\epro\model\BindResource.class
+de\thbin\epro\model\MaintenanceInfo.class
+de\thbin\epro\model\ServiceBindingSchema.class
+de\thbin\epro\model\InputParameterSchema.class
+de\thbin\epro\model\ServiceInstanceSchema.class
+de\thbin\epro\model\ServicePlan.class
+de\thbin\epro\model\ServiceBrokerErrors.class
+de\thbin\epro\model\ProvideResponseBody.class
+de\thbin\epro\model\ProvideRequestBody.class

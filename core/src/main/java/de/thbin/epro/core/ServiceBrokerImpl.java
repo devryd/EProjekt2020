@@ -1,12 +1,14 @@
-package de.thbin.epro;
+package de.thbin.epro.core;
 
+import de.thbin.epro.model.*;
+import io.fabric8.kubernetes.api.model.WatchEventFluent;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-public class ServiceBrokerImpl { //implements de.thbin.epro.ServiceBrokerInterface
+public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerInterface
 
     ServiceOffering[] catalog;
 

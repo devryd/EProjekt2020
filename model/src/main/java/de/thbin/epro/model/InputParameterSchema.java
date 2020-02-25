@@ -1,4 +1,4 @@
-package de.thbin.epro;
+package de.thbin.epro.model;
 
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.loader.SchemaLoader;
