@@ -21,7 +21,7 @@ public class InputParameterSchema {
     public InputParameterSchema() {
         try {
             InputStream schemaInput = new FileInputStream("src/main/java/ServiceSchema.json");
-            parameters = new JSONObject(new JSONTokener(schemaInput));
+            parameters = new JSONObject(new JSONTokener(schemaInput.toString()));
         } catch (FileNotFoundException | JSONException e) {
             e.printStackTrace();
         }
