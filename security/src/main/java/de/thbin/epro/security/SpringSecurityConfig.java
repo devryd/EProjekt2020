@@ -27,6 +27,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * create a global admin user to secure every rest endpoint
+     * create a admin user for testing purposes
      * @param AuthenticationManagerBuilder
      */
     @Override

@@ -59,7 +59,7 @@ public class ApplicationTest {
         headers.add("X-Broker-API-Request-Identity", requestIdentity);
     }
 
-    // basic test for getServiceCatalog (not the rest endpoint!!)
+    // basic test for getServiceCatalog, not the "real" rest endpoint (no security config etc.)
     @Test
     public void getServiceCatalog() {
         MockHttpServletRequest request = new MockHttpServletRequest();
