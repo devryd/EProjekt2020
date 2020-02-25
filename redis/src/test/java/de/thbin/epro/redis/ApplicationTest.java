@@ -71,12 +71,58 @@ public class ApplicationTest {
     }
 
     // test for rest call of /v2/catalog
+    // with basic auth, test-user
+    // correct header set
+    // should answer w/ response code 200 (OK)
     @Test
     public void testServiceCatalog() {
         ResponseEntity<String> response = restTemplate.withBasicAuth(user, password).exchange(
                 URL + "/v2/catalog", HttpMethod.GET, new HttpEntity<Object>(headers),
                 String.class);
+
         assertTrue(isEqualTo(response.getStatusCodeValue(), 200));
+    }
+
+    // test for rest call of /v2/catalog
+    // without any auth
+    // correct header set
+    // should answer w/ 302 (redirected) because request is redirected to login form but no authentication given
+    @Test
+    public void noAuthTestServiceCatalog() {
+        ResponseEntity<String> response = restTemplate.exchange(
+                URL + "/v2/catalog", HttpMethod.GET, new HttpEntity<Object>(headers),
+                String.class);
+        assertTrue(isEqualTo(response.getStatusCodeValue(), 302));
+    }
+
+    // test for rest call of /v2/catalog
+    // with basic auth, test-user
+    // empty header
+    // should answer w/ response code 400 (bad request)
+    @Test
+    public void noHeaderTestServiceCatalog() {
+        ResponseEntity<String> response = restTemplate.withBasicAuth(user, password).exchange(
+                URL + "/v2/catalog", HttpMethod.GET,new HttpEntity<Object>(null), String.class);
+
+        assertTrue(isEqualTo(response.getStatusCodeValue(), 400));
+    }
+
+    // test for rest call of /v2/catalog
+    // with basic auth, test-user
+    // wrong X-Broker-API-Version
+    // should answer w/ response code 412 (precondition failed)
+    @Test
+    public void wrongHeaderVersionTestServiceCatalog() {
+        // create wrong header set
+        MultiValueMap<String, String> tempHeaders = new LinkedMultiValueMap<>();
+        tempHeaders.add("X-Broker-API-Version", "1.5");
+        tempHeaders.add("X-Broker-API-Originating-Identity", originIdentity);
+        tempHeaders.add("X-Broker-API-Request-Identity", requestIdentity);
+
+        ResponseEntity<String> response = restTemplate.withBasicAuth(user, password).exchange(
+                URL + "/v2/catalog", HttpMethod.GET,new HttpEntity<Object>(tempHeaders), String.class);
+
+        assertTrue(isEqualTo(response.getStatusCodeValue(), 412));
     }
 
     // returns true if first == second

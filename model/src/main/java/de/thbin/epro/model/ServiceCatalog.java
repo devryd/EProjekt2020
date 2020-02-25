@@ -1,6 +1,4 @@
-package de.thbin.epro;
-
-
+package de.thbin.epro.model;
 
 public class ServiceCatalog {
 
