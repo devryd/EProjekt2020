@@ -1,5 +1,8 @@
-package de.thbin.epro;
+package de.thbin.epro.core;
 
+import de.thbin.epro.model.FetchResponseBody;
+import de.thbin.epro.model.ProvideResponseBody;
+import de.thbin.epro.model.ServiceOffering;
 import org.springframework.http.ResponseEntity;
 
 public interface ServiceBrokerInterface {

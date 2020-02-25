@@ -1,4 +1,4 @@
-package de.thbin.epro;
+package de.thbin.epro.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;

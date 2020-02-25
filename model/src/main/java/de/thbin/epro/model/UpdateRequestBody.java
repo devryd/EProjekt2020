@@ -1,4 +1,4 @@
-package de.thbin.epro;
+package de.thbin.epro.model;
 
 public class UpdateRequestBody {
     Object context;
@@ -6,5 +6,5 @@ public class UpdateRequestBody {
     String plan_id;
     Object parameters;
     PreviousValues previous_values;
-    //de.thbin.epro.MaintenanceInfo maintenance_info;
+    //de.thbin.epro.model.MaintenanceInfo maintenance_info;
 }

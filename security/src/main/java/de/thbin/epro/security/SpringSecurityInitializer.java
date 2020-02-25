@@ -1,4 +1,4 @@
-package de.thbin.epro;
+package de.thbin.epro.security;
 
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 

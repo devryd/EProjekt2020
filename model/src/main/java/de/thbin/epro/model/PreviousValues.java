@@ -1,4 +1,4 @@
-package de.thbin.epro;
+package de.thbin.epro.model;
 
 public class PreviousValues {
     String service_id;
