@@ -4,12 +4,14 @@ public class Schemas {
 
     // optional
 
-    ServiceInstanceSchema service_instance;
-    ServiceBindingSchema service_binding;
+    private ServiceInstanceSchema service_instance;
+    private ServiceBindingSchema service_binding;
 
     // CONSTRUCTOR
 
     public Schemas(){
+        service_instance = new ServiceInstanceSchema();
+        service_binding = new ServiceBindingSchema();
 
     }
 
