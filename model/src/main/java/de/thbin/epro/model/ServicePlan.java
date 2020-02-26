@@ -22,6 +22,8 @@ public class ServicePlan {
         this.id = id;
         this.name = name;
         this.description = description;
+
+        schemas = new Schemas();
     }
 
     // GETTER AND SETTER

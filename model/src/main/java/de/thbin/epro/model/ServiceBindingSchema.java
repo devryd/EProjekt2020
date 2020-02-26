@@ -9,7 +9,7 @@ public class ServiceBindingSchema {
     // CONSTRUCTOR
 
     public ServiceBindingSchema(){
-
+        create = new InputParameterSchema("sb");
     }
 
     // GETTER AND SETTER
