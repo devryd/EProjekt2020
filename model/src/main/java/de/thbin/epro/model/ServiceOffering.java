@@ -29,6 +29,8 @@ public class ServiceOffering {
         this.description = description;
         this.bindable = bindable;
         this.plans = plans;
+
+        //plans.add(new ServicePlan());
     }
 
     // GETTER AND SETTER

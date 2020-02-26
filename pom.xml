@@ -79,12 +79,12 @@
             <version>3.1.1</version>
         </dependency>
 
-        <!-- JSON obj -->
+        <!-- JSON obj
         <dependency>
             <groupId>com.github.everit-org.json-schema</groupId>
             <artifactId>org.everit.json.schema</artifactId>
             <version>1.12.1</version>
-        </dependency>
+        </dependency>-->
 
         <!-- JSON obj -->
         <dependency>
