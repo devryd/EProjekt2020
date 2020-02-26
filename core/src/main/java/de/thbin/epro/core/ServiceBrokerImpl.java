@@ -1,7 +1,6 @@
 package de.thbin.epro.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.thbin.epro.ServiceCatalog;
 import de.thbin.epro.model.*;
 import io.fabric8.kubernetes.api.model.WatchEventFluent;
 import org.springframework.http.HttpStatus;
@@ -34,7 +33,7 @@ schema in json datei nicht zwingend notwendig
 public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerInterface
 
     //ersetzen durch ServiceCatalog
-    de.thbin.epro.model.ServiceOffering[] catalog;
+    ServiceCatalog catalog;
 
     final String version = "2.14";
 
@@ -43,13 +42,12 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
     stattdessen jsonobject?
     oder ganze klasse außen rum statt array?
      */
-    public ServiceBrokerImpl() throws IOException {
+    public ServiceBrokerImpl() {
         /*ObjectMapper mapper = new ObjectMapper();
         catalog = mapper.readValue(new File("../resources/ServiceSchema.json"), ServiceOffering[].class);
         */
-        ServiceCatalog serviceCatalog = new ServiceCatalog();
-        serviceCatalog.getServices();
-        catalog = serviceCatalog.getServices();
+        catalog = new ServiceCatalog();
+        //catalog = serviceCatalog.getServices();
         //geht noch nicht, weil servicecatalog im falschen package
     }
 
@@ -66,7 +64,7 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             return new ResponseEntity<>("Error: Header needs to contain a version number.", HttpStatus.BAD_REQUEST);
         if (!brokerVersionUsed.equals(version))
             return new ResponseEntity<>("Error: Wrong version used. This broker uses version %s.%n", HttpStatus.PRECONDITION_FAILED);
-        return new ResponseEntity<>(catalog, HttpStatus.OK);
+        return new ResponseEntity<>(catalog.getServices(), HttpStatus.OK);
     }
 
     @RequestMapping (value = "/v2/service_instances/:instance_id/last_operation", method = RequestMethod.GET)
