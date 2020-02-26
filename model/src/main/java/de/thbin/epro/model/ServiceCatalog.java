@@ -46,12 +46,11 @@ public class ServiceCatalog {
 
             services[0] = new ServiceOffering(name, id, description, bindable, new ArrayList<>());
         }catch (FileNotFoundException e){
-          e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
     // GETTER AND SETTER
-
 
     public ServiceOffering[] getServices() {
         return services;
