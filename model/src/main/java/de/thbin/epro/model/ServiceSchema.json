@@ -1,0 +1,109 @@
+{
+  "services": [
+    {
+      "name": "Redis",
+      "id": "EproRedis",
+      "description": "Redis database",
+      "bindable": true,
+      "plan_updateable": true,
+      "plans": [
+        {
+          "name": "Small ",
+          "id": "EproSmP",
+          "description": "One small container with small resource",
+          "schemas": {
+            "service_instance": {
+              "create": {
+                "parameters": {
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object"
+                }
+              },
+              "update": {
+                "parameters": {
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object"
+                }
+              }
+            },
+            "service_binding": {
+              "create": {
+                "parameters": {
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "maintenance_info": {
+            "version:": "0.0.0.0.0.1"
+          }
+        },
+        {
+          "name": "Standard ",
+          "id": "EproSdP",
+          "description": "One Container with many resource",
+          "schemas": {
+            "service_instance": {
+              "create": {
+                "parameters": {
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object"
+                }
+              },
+              "update": {
+                "parameters": {
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object"
+                }
+              }
+            },
+            "service_binding": {
+              "create": {
+                "parameters": {
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "maintenance_info": {
+            "version:": "0.0.0.0.0.1"
+          }
+        },
+        {
+          "name": "Cluster ",
+          "id": "EproClP",
+          "description": "Cluster of Container",
+          "schemas": {
+            "service_instance": {
+              "create": {
+                "parameters": {
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object"
+                }
+              },
+              "update": {
+                "parameters": {
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object"
+                }
+              }
+            },
+            "service_binding": {
+              "create": {
+                "parameters": {
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "maintenance_info": {
+            "version:": "0.0.0.0.0.1"
+          }
+        }
+      ]
+    }
+  ]
+}
