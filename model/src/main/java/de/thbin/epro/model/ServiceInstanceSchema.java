@@ -10,6 +10,8 @@ public class ServiceInstanceSchema {
     // CONSTRUCTOR
 
     public ServiceInstanceSchema(){
+        create = new InputParameterSchema("si_create");
+        update = new InputParameterSchema("si_update");
 
     }
 
