@@ -52,7 +52,6 @@ public class ServiceCatalog {
 
     // GETTER AND SETTER
 
-
     public ServiceOffering[] getServices() {
         return services;
     }
