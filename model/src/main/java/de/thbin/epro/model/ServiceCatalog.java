@@ -1,13 +1,11 @@
 package de.thbin.epro.model;
 
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.util.ArrayList;
 
