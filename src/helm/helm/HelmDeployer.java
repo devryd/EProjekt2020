@@ -35,7 +35,7 @@ import org.yaml.snakeyaml.Yaml;
  */
 @Service
 public class HelmDeployer {
- //   private HashMap<Long, Release> releases;
+
     private HashMap<String, DeploymentData> releases;
     private Tiller tiller;
     private DefaultKubernetesClient client;
