@@ -15,7 +15,11 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
-
+/**
+ * ServiceCatalog reads all services, service plans and all information from the ServiceSchema.json by just making an instance of ServiceCatalog.
+ * Itself contains only a array of ServiceOffering, which contains the services.
+ * @author Michael Kunz
+ * */
 public class ServiceCatalog {
 
     // must have

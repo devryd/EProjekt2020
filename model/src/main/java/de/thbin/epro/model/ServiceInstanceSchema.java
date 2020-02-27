@@ -1,5 +1,9 @@
 package de.thbin.epro.model;
 
+/**
+ * ServiceInstanceSchema contains information for creating and updating an service instance
+ * @author Michael Kunz
+ * */
 public class ServiceInstanceSchema {
 
     // optional
