@@ -12,7 +12,8 @@ import org.springframework.util.Assert;
  *
  * @author  Christian Gebhard
  */
-@SpringBootApplication(exclude={SecurityAutoConfiguration.class}, scanBasePackages = {"de.thbin.epro"})
+@SpringBootApplication(exclude={SecurityAutoConfiguration.class},
+                       scanBasePackages = {"de.thbin.epro"})
 public class Application {
 
     /**

@@ -25,7 +25,7 @@ public class ServiceCatalog {
             services = new ServiceOffering[1];
 
             InputStream schemaInput = new FileInputStream("model/src/main/java/de/thbin/epro/model/ServiceSchema.json");
-            JSONObject parameters = new JSONObject(new JSONTokener(schemaInput));
+            JSONObject parameters = new JSONObject(new JSONTokener(schemaInput);
 
             JSONArray js = (JSONArray) parameters.get("services");
             JSONObject subjects = (JSONObject) js.get(0);   // content of services
