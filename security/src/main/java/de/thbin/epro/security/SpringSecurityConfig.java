@@ -27,12 +27,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * create a global admin user to secure every rest endpoint
+     * create a admin user for testing purposes
      * @param AuthenticationManagerBuilder
      */
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-            .withUser("admin").password(passwordEncoder.encode(password)).roles("USER", "ADMIN");
+            .withUser("admin").password(passwordEncoder.encode(password)).roles("USER", "ADMIN")
+            .and()
+            .withUser("test").password(passwordEncoder.encode("test")).roles("ADMIN");
     }
 
     /**

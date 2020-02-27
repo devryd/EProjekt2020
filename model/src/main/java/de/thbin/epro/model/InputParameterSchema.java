@@ -20,6 +20,7 @@ public class InputParameterSchema {
 
     public InputParameterSchema(String schema) {
         try {
+
             // InputStream schemaInput = new FileInputStream("model/src/main/java/de/thbin/epro/model/ServiceSchema.json");
             parameters = null; //new JSONObject(new JSONTokener("src/main/java/ServiceSchema.json"));
 
@@ -32,7 +33,6 @@ public class InputParameterSchema {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
 
             JSONArray js = (JSONArray) parameters.get("services");
             JSONObject subjects = (JSONObject) js.get(0);   // content of services

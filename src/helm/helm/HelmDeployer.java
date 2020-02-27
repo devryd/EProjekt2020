@@ -5,10 +5,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URI;
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import hapi.chart.ChartOuterClass;
@@ -19,6 +16,7 @@ import hapi.release.ReleaseOuterClass.Release;
 import hapi.services.tiller.Tiller.InstallReleaseRequest;
 import hapi.services.tiller.Tiller.InstallReleaseResponse;
 import helm.DeploymentSize;
+import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import org.microbean.helm.ReleaseManager;
 import org.microbean.helm.Tiller;
@@ -33,14 +31,14 @@ import org.yaml.snakeyaml.Yaml;
 @Service
 public class HelmDeployer {
  //   private HashMap<Long, Release> releases;
-    private HashMap<String, Release> releases;
+    private HashMap<String, DeploymentData> releases;
     private Tiller tiller;
     private DefaultKubernetesClient client;
     private ReleaseManager releaseManager;
     private InstallReleaseRequest.Builder requestBuilder;
 
     public HelmDeployer(){
-        releases = new HashMap<String, Release>();
+        releases = new HashMap<String, DeploymentData>();
     }
     public void deployRedis(DeploymentSize size, String id) throws IOException, ExecutionException, InterruptedException {
         final URI uri = URI.create("file:///C:/Users/JNoel/Documents/helm-charts/simple-redis-cluster");
@@ -73,22 +71,18 @@ public class HelmDeployer {
                 case STANDARD:
                     values = new LinkedHashMap<String, Object>();
             }
- /*           Map<String, Object> service = new HashMap<String, Object>();
-            service.put("type", "LoadBalancer");
-            service.put("loadBalancerIP", "104.198.205.71");
-            values.put("service", service);
-*/
             final String yaml = new Yaml().dump(values);
             requestBuilder.getValuesBuilder().setRaw(yaml);
             final Future<InstallReleaseResponse> releaseFuture = releaseManager.install(requestBuilder, chart);
             assert releaseFuture != null;
             final Release release = releaseFuture.get().getRelease();
             assert release != null;
+            releases.put(id, new DeploymentData(release, "mbh"+id+"-simple-redis-cluster"));
         }
 
 
-    public void uninstallService(String id) throws Exception{
-        Release release = releases.remove(id);
+    public void uninstallService(String id) throws IOException{
+        Release release = releases.remove(id).getRelease();
         hapi.services.tiller.Tiller.UninstallReleaseRequest.Builder unBuilder= hapi.services.tiller.Tiller.UninstallReleaseRequest.newBuilder();
 
         unBuilder.setTimeout(300L);
@@ -98,6 +92,35 @@ public class HelmDeployer {
 
         Future<hapi.services.tiller.Tiller.UninstallReleaseResponse> future = releaseManager.uninstall(req);
   //      hapi.services.tiller.Tiller.UninstallReleaseResponse resp = future.get();
+    }
+
+    public void deployLoadBalancer(String id, int port){
+        String deploymentName = releases.get(id).getDeploymentName();
+        Map<String, String> selector = new HashMap<>();
+        selector.put("release", deploymentName);
+
+        List<ServicePort> servicePorts = new ArrayList<>();
+        servicePorts.add(new ServicePortBuilder()
+                .withPort(port)
+                .withTargetPort(new IntOrString(port))
+                .withProtocol("TCP")
+                .build()
+        );
+        this.client.services()
+                .inNamespace("default").createNew()
+                .withKind("Service")
+                .withApiVersion("v1")
+                .withMetadata(new ObjectMetaBuilder()
+                        .withName(deploymentName)
+                        .build()
+                ).withSpec(new ServiceSpecBuilder()
+                .withType("LoadBalancer")
+                .withSessionAffinity("None")
+                .withExternalTrafficPolicy("Cluster")
+                .withSelector(selector)
+                .withPorts(servicePorts)
+                .build()
+        ).done();
     }
 
     private LinkedHashMap<String, Object> buildClusterSizeChartValues() {
@@ -116,4 +139,5 @@ public class HelmDeployer {
         smallSizeValueMap.put("resources", resources);
         return smallSizeValueMap;
     }
+
 }
