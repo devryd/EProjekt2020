@@ -28,6 +28,7 @@ public class ServiceCatalog {
         try {
             services = new ServiceOffering[1];
 
+
             // InputStream schemaInput = new FileInputStream("model/src/main/java/de/thbin/epro/model/ServiceSchema.json");
             JSONObject parameters = null;// = new JSONObject(new JSONTokener("hjkl"));
 
@@ -41,9 +42,6 @@ public class ServiceCatalog {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
-
 
 
             JSONArray js = (JSONArray) parameters.get("services");

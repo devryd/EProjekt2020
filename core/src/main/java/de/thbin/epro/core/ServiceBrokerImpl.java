@@ -2,8 +2,8 @@ package de.thbin.epro.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.thbin.epro.model.*;
-import helm.DeploymentSize;
-import helm.HelmDeployer;
+import de.thbin.epro.helm.*;
+
 import io.fabric8.kubernetes.api.model.WatchEventFluent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /*
 Fragen:
@@ -378,6 +379,10 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         try {
             helmDeployer.uninstallService(instance_id);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
         binding_ids.remove(binding_id);

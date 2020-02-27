@@ -1,4 +1,4 @@
-package helm;
+package de.thbin.epro.helm;
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -17,7 +17,6 @@ import hapi.release.ReleaseOuterClass;
 import hapi.release.ReleaseOuterClass.Release;
 import hapi.services.tiller.Tiller.InstallReleaseRequest;
 import hapi.services.tiller.Tiller.InstallReleaseResponse;
-import helm.DeploymentSize;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import org.microbean.helm.ReleaseManager;

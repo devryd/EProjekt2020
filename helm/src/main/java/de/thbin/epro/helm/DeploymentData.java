@@ -1,4 +1,4 @@
-package helm;
+package de.thbin.epro.helm;
 
 import hapi.release.ReleaseOuterClass.Release;
 
