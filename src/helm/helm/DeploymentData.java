@@ -2,6 +2,10 @@ package helm;
 
 import hapi.release.ReleaseOuterClass.Release;
 
+/**
+ * class for capsuling release and deployment-name
+ * @author Jannik Nöldner
+ */
 public class DeploymentData {
     private Release release;
     private String deploymentName;

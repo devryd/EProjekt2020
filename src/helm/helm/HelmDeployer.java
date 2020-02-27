@@ -8,6 +8,8 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
+import de.thbin.epro.model.ServicePlan;
 import hapi.chart.ChartOuterClass;
 import hapi.chart.ChartOuterClass.Chart;
 import hapi.chart.ConfigOuterClass;
@@ -25,12 +27,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.yaml.snakeyaml.Yaml;
 
-/**@author Jannik Nöldner
+/**
+ * Service to trigger deployment and uninstalling of
+ * helm charts. MUST be used with a helm-version prior to 3.1
+ * @author Jannik Nöldner
  *
  */
 @Service
 public class HelmDeployer {
- //   private HashMap<Long, Release> releases;
+
     private HashMap<String, DeploymentData> releases;
     private Tiller tiller;
     private DefaultKubernetesClient client;
@@ -40,6 +45,16 @@ public class HelmDeployer {
     public HelmDeployer(){
         releases = new HashMap<String, DeploymentData>();
     }
+
+    /**
+     * Creates new Helm-Deployment, using a predefined helm chart. Values to vary deployment size
+     * are added before deployment
+     * @param size one of enumeration "DeploymentSize"
+     * @param id String to identify Deployment
+     * @throws IOException          when loading chart fails
+     * @throws ExecutionException   when installing chart fails
+     * @throws InterruptedException when fetching deployed release fails
+     */
     public void deployRedis(DeploymentSize size, String id) throws IOException, ExecutionException, InterruptedException {
         final URI uri = URI.create("file:///C:/Users/JNoel/Documents/helm-charts/simple-redis-cluster");
         assert uri != null;
@@ -60,7 +75,6 @@ public class HelmDeployer {
             requestBuilder.setName("mbh"+id);
             requestBuilder.setWait(true);
             Map<String, Object> values = null;
-
             switch (size) {
                 case SMALL:
                     values = buildSmallSizeChartValues();
@@ -80,8 +94,14 @@ public class HelmDeployer {
             releases.put(id, new DeploymentData(release, "mbh"+id+"-simple-redis-cluster"));
         }
 
-
-    public void uninstallService(String id) throws IOException{
+    /**
+     * Uninstalls release identified by given ID.
+     * @param id identifies service to be uninstalled
+     * @throws IOException if uninstalling process fails
+     * @throws ExecutionException   if fetching UninstallResponse fails
+     * @throws InterruptedException if fetching UninstallResponse fails
+     */
+    public void uninstallService(String id) throws ExecutionException, InterruptedException, IOException {
         Release release = releases.remove(id).getRelease();
         hapi.services.tiller.Tiller.UninstallReleaseRequest.Builder unBuilder= hapi.services.tiller.Tiller.UninstallReleaseRequest.newBuilder();
 
@@ -91,44 +111,23 @@ public class HelmDeployer {
         hapi.services.tiller.Tiller.UninstallReleaseRequest req = unBuilder.build();
 
         Future<hapi.services.tiller.Tiller.UninstallReleaseResponse> future = releaseManager.uninstall(req);
-  //      hapi.services.tiller.Tiller.UninstallReleaseResponse resp = future.get();
+        hapi.services.tiller.Tiller.UninstallReleaseResponse resp = future.get();
     }
 
-    public void deployLoadBalancer(String id, int port){
-        String deploymentName = releases.get(id).getDeploymentName();
-        Map<String, String> selector = new HashMap<>();
-        selector.put("release", deploymentName);
-
-        List<ServicePort> servicePorts = new ArrayList<>();
-        servicePorts.add(new ServicePortBuilder()
-                .withPort(port)
-                .withTargetPort(new IntOrString(port))
-                .withProtocol("TCP")
-                .build()
-        );
-        this.client.services()
-                .inNamespace("default").createNew()
-                .withKind("Service")
-                .withApiVersion("v1")
-                .withMetadata(new ObjectMetaBuilder()
-                        .withName(deploymentName)
-                        .build()
-                ).withSpec(new ServiceSpecBuilder()
-                .withType("LoadBalancer")
-                .withSessionAffinity("None")
-                .withExternalTrafficPolicy("Cluster")
-                .withSelector(selector)
-                .withPorts(servicePorts)
-                .build()
-        ).done();
-    }
-
+    /**
+     * builds Chart for a cluster-sized deployment
+     * @return built chart-map
+     */
     private LinkedHashMap<String, Object> buildClusterSizeChartValues() {
         LinkedHashMap<String, Object> clusterValueMap = new LinkedHashMap<String, Object>();
         clusterValueMap.put("replicaCount", 3);
         return clusterValueMap;
     }
 
+    /**
+     * builds chart for small-sized deployment
+     * @return built chart-map
+     */
     private LinkedHashMap<String, Object> buildSmallSizeChartValues() {
         LinkedHashMap<String, Object> smallSizeValueMap = new LinkedHashMap<String, Object>();
         LinkedHashMap<String, Object> resources = new LinkedHashMap<String, Object>();
