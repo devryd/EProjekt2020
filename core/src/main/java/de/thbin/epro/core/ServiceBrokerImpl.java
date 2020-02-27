@@ -8,8 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Map;
 /*
 Fragen:
 json datei an object mappen?
@@ -37,6 +40,8 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
 
     final String version = "2.14";
 
+    Map<String, String> instance_ids; //and chosen serviceplan as value
+    Map<String, String> binding_ids; //and associated instance_id as value
     //macht michael mapper ggf nicht notwendig
     /*
     stattdessen jsonobject?
@@ -46,6 +51,7 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         /*ObjectMapper mapper = new ObjectMapper();
         catalog = mapper.readValue(new File("../resources/ServiceSchema.json"), ServiceOffering[].class);
         */
+        //@autowired michael?
         catalog = new ServiceCatalog();
         //catalog = serviceCatalog.getServices();
         //geht noch nicht, weil servicecatalog im falschen package
@@ -72,7 +78,8 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity, //notwendig? fuer request-tracing
-            @PathVariable("instance_id") String instance_id,
+            //@PathVariable("instance_id") String instance_id,
+            @PathParam("instance_id") String instance_id,
             @RequestParam(name = "service_id") String service_id,
             @RequestParam(name = "plan_id") String plan_id,
             @RequestParam(name = "operation") String operation
@@ -82,10 +89,20 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         if (!brokerVersionUsed.equals(version))
             return new ResponseEntity<>("Error: Wrong version used. This broker uses version %s.%n", HttpStatus.PRECONDITION_FAILED);
 
+
         PollBody responseBody = new PollBody();
         //if abfragen...
         //bad request und gone
-        //success
+        if (!checkInstanceId(instance_id))
+            return new ResponseEntity<>("Given instance_id doesn't exist.", HttpStatus.BAD_REQUEST);
+        //optional anfang
+        if (!checkServiceId(service_id))
+            return new ResponseEntity<>("Given service_id doesn't exist.", HttpStatus.BAD_REQUEST);
+        if (!checkPlanId(plan_id))
+            return new ResponseEntity<>("Given plan_id doesn't exist.", HttpStatus.BAD_REQUEST);
+        //check if given plan_id
+        //optional ende
+        //success, noch die zwei anderen states sinnvoll, dafür anfrage an jannik
         responseBody.setState("succeeded");
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
@@ -95,8 +112,10 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
-            @PathVariable("instance_id") String instance_id,
-            @PathVariable("binding_id") String binding_id,
+            //@PathVariable("instance_id") String instance_id,
+            @PathParam("instance_id") String instance_id,
+            //@PathVariable("binding_id") String binding_id,
+            @PathParam("binding_id") String binding_id,
             @RequestParam(name = "service_id") String service_id,
             @RequestParam(name = "plan_id") String plan_id,
             @RequestParam(name = "operation") String operation
@@ -105,10 +124,18 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             return new ResponseEntity<>("Error: Header needs to contain a version number.", HttpStatus.BAD_REQUEST);
         if (!brokerVersionUsed.equals(version))
             return new ResponseEntity<>("Error: Wrong version used. This broker uses version %s.%n", HttpStatus.PRECONDITION_FAILED);
-        PollBody responseBody = new PollBody(); //pollbody aus servicebinding ok?
+
         //if abfragen...
-        //bad request und gone
+        if (!checkInstanceId(instance_id))
+            return new ResponseEntity<>("Given instance_id doesn't exist.", HttpStatus.BAD_REQUEST);
+        if (!checkBindingId(binding_id))
+            return new ResponseEntity<>("Given binding_id doesn't exist.", HttpStatus.BAD_REQUEST);
+        if (!checkBindingCorrectInstance(binding_id, instance_id))
+            return new ResponseEntity<>("The given binding is no binding for the given instance", HttpStatus.BAD_REQUEST);
+        //optional, see method above
+        //gone
         //success
+        PollBody responseBody = new PollBody(); //pollbody aus servicebinding ok?
         responseBody.setState("succeeded");
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
@@ -118,7 +145,8 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
-            @PathVariable("instance_id") String instance_id,
+            //@PathVariable("instance_id") String instance_id,
+            @PathParam("instance_id") String instance_id,
             @RequestParam(name = "accepts_incomplete") boolean accepts_incomplete,
             @RequestBody ProvideRequestBody body
 
@@ -140,7 +168,8 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             @RequestHeader("X-Broker-API-Originating-Identity") String originIdentity,
             @RequestHeader("X-Broker-API-Request-Identity") String requestIdentity,
-            @PathVariable("instance_id") String instance_id,
+            //@PathVariable("instance_id") String instance_id,
+            @PathParam("instance_id") String instance_id,
             @RequestParam(name = "service_id") String service_id,
             @RequestParam(name = "plan_id") String plan_id
     ) {
@@ -161,7 +190,8 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
-            @PathVariable("instance_id") String instance_id,
+            //@PathVariable("instance_id") String instance_id,
+            @PathParam("instance_id") String instance_id,
             @RequestParam(name = "accepts_incomplete") boolean accepts_incomplete,
             @RequestBody UpdateRequestBody body
     ) {
@@ -179,8 +209,10 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
-            @PathVariable("instance_id") String instance_id,
-            @PathVariable("binding_id") String binding_id,
+            //@PathVariable("instance_id") String instance_id,
+            @PathParam("instance_id") String instance_id,
+            //@PathVariable("binding_id") String binding_id,
+            @PathParam("binding_id") String binding_id,
             @RequestParam(name = "accepts_incomplete") boolean accepts_incomplete,
             @RequestBody BindRequestBody body
     ) {
@@ -207,8 +239,10 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
-            @PathVariable("instance_id") String instance_id,
-            @PathVariable("binding_id") String binding_id,
+            //@PathVariable("instance_id") String instance_id,
+            @PathParam("instance_id") String instance_id,
+            //@PathVariable("binding_id") String binding_id,
+            @PathParam("binding_id") String binding_id,
             @RequestParam(name = "service_id") String service_id, //query string field da rein?
             @RequestParam(name = "plan_id") String plan_id
     ) {
@@ -230,8 +264,10 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
-            @PathVariable("instance_id") String instance_id,
-            @PathVariable("binding_id") String binding_id,
+            //@PathVariable("instance_id") String instance_id,
+            @PathParam("instance_id") String instance_id,
+            //@PathVariable("binding_id") String binding_id,
+            @PathParam("binding_id") String binding_id,
             @RequestParam(name = "service_id") String service_id,
             @RequestParam(name = "plan_id") String plan_id,
             @RequestParam(name = "accepts_incomplete") boolean accepts_incomplete
@@ -253,7 +289,8 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
-            @PathVariable("instance_id") String instance_id,
+            //@PathVariable("instance_id") String instance_id,
+            @PathParam("instance_id") String instance_id,
             @RequestParam(name = "service_id") String service_id,
             @RequestParam(name = "plan_id") String plan_id,
             @RequestParam(name = "accepts_incomplete") boolean accepts_incomplete
@@ -265,6 +302,8 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         //if invalid data 400 bad request
         //if... 422 unprocessable entity
         //if instance id nicht vorhanden 410 gone
+        if (!checkInstanceId(instance_id))
+            return new ResponseEntity<>(HttpStatus.GONE);
         //if deletion am laufen 202 accepted
         //ansonsten uninstall anfrage stellen
         return new ResponseEntity<>(HttpStatus.OK);
@@ -272,5 +311,37 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
     }
 
 
+    boolean checkInstanceId(String instance_id){
+        //übergibt plattform ne service_id und plan_id?
+        if (instance_ids.containsKey(instance_id))
+            return true;
+        return false;
+    }
+
+    boolean checkBindingId(String binding_id){
+        if (binding_ids.containsKey(binding_id))
+            return true;
+        return false;
+    }
+    boolean checkBindingCorrectInstance(String binding_id, String instance_id){
+        if (binding_ids.get(binding_id).equals(instance_id))
+            return true;
+        return false;
+    }
+    boolean checkServiceId(String service_id){
+        ServiceOffering[] catalogArray = catalog.getServices();
+        if (catalogArray[0].getId().equals(service_id))
+            return true;
+        return false;
+    }
+    boolean checkPlanId(String plan_id){
+        ServiceOffering[] catalogArray = catalog.getServices();
+        ArrayList<ServicePlan> plans = catalogArray[0].getPlans();
+        for (ServicePlan plan : plans){
+            if (plan.getId().equals(plan_id))
+                return true;
+        }
+        return false;
+    }
 
 }
