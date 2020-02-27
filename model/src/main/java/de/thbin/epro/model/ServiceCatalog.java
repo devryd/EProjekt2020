@@ -24,8 +24,7 @@ public class ServiceCatalog {
 
     // CONSTRUCTOR
 
-    public static void main(String[] args){
-        //public ServiceCatalog(){
+    public ServiceCatalog(){
         try {
             ServiceOffering[] services = new ServiceOffering[1];
 
