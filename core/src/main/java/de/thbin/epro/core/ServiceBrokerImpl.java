@@ -51,31 +51,20 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
     oder ganze klasse außen rum statt array?
      */
     @Autowired
+    //HelmDeployer helmDeployer;
     public ServiceBrokerImpl() {
         /*ObjectMapper mapper = new ObjectMapper();
         catalog = mapper.readValue(new File("../resources/ServiceSchema.json"), ServiceOffering[].class);
         */
         //@autowired michael?
         System.out.println("gude");
+        catalog = null;
         catalog = new ServiceCatalog();
         //catalog = serviceCatalog.getServices();
         //geht noch nicht, weil servicecatalog im falschen package
     }
 
-    class Dog{
-        String miau;
-        String hey = "hey";
-        public String getMiau(){
-            return miau;
-        }
-        public String getHey(){
-            return hey;
-        }
-        UpdateRequestBody body;
-        UpdateRequestBody getBody(){
-            return getBody();
-        }
-    }
+
     @RequestMapping (value="/v2/catalog", method = RequestMethod.GET)
     //@ResponseBody entweder das oder responseentity, ansonsten doppelt gemoppelt
     public ResponseEntity<?> getServiceCatalog(
@@ -85,26 +74,27 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             ) {
         /*ResponseEntity<String> response;
         response.*/
-        Dog dog = new Dog();
         if (brokerVersionUsed == null)
             return new ResponseEntity<>("Error: Header needs to contain a version number.", HttpStatus.BAD_REQUEST);
         if (!brokerVersionUsed.equals(version))
             return new ResponseEntity<>("Error: Wrong version used. This broker uses version %s.%n", HttpStatus.PRECONDITION_FAILED);
         //return new ResponseEntity<>(dog, HttpStatus.OK);
-        System.out.printf(catalog.getServices()[0].getName());
+        //if (catalog == null)
+            //System.out.printf("Catalog is empty");
+        //System.out.printf(String.valueOf(catalog.getServices().length));
         return new ResponseEntity<>(catalog.getServices(), HttpStatus.OK);
     }
 
     @RequestMapping (value = "/v2/service_instances/:instance_id/last_operation", method = RequestMethod.GET)
     public ResponseEntity<?> pollStateServiceInstance(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
-            @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
-            @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity, //notwendig? fuer request-tracing
+            //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
+            //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity, //notwendig? fuer request-tracing
             //@PathVariable("instance_id") String instance_id,
             @PathParam("instance_id") String instance_id,
             @RequestParam(name = "service_id") String service_id,
-            @RequestParam(name = "plan_id") String plan_id,
-            @RequestParam(name = "operation") String operation
+            @RequestParam(name = "plan_id") String plan_id
+            //@RequestParam(name = "operation") String operation
     ) {
         if (brokerVersionUsed == null)
             return new ResponseEntity<>("Error: Header needs to contain a version number.", HttpStatus.BAD_REQUEST);
@@ -132,15 +122,15 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
     @RequestMapping (value = "/v2/service_instances/:instance_id/service_bindings/:binding_id/last_operation", method = RequestMethod.GET)
     public ResponseEntity<?> pollStateServiceBinding(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
-            @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
-            @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
+            //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
+            //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
             //@PathVariable("instance_id") String instance_id,
             @PathParam("instance_id") String instance_id,
             //@PathVariable("binding_id") String binding_id,
             @PathParam("binding_id") String binding_id,
             @RequestParam(name = "service_id") String service_id,
-            @RequestParam(name = "plan_id") String plan_id,
-            @RequestParam(name = "operation") String operation
+            @RequestParam(name = "plan_id") String plan_id
+            //@RequestParam(name = "operation") String operation
     ) {
         if (brokerVersionUsed == null)
             return new ResponseEntity<>("Error: Header needs to contain a version number.", HttpStatus.BAD_REQUEST);
