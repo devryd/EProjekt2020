@@ -1,7 +1,5 @@
 package de.thbin.epro.model;
 
-import org.everit.json.schema.Schema;
-import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -9,7 +7,6 @@ import org.json.JSONArray;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 
 public class InputParameterSchema {
@@ -22,7 +19,7 @@ public class InputParameterSchema {
 
     public InputParameterSchema(String schema) {
         try {
-            InputStream schemaInput = new FileInputStream("model/src/main/java/de/thbin/epro/model/ServiceSchema.json");
+            InputStream schemaInput = new FileInputStream("src/main/java/ServiceSchema.json");
             parameters = new JSONObject(new JSONTokener(schemaInput));
 
             JSONArray js = (JSONArray) parameters.get("services");

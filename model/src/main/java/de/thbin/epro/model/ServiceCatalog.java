@@ -2,14 +2,15 @@ package de.thbin.epro.model;
 
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.InputStream;
 import java.util.ArrayList;
+
 
 public class ServiceCatalog {
 
@@ -47,13 +48,12 @@ public class ServiceCatalog {
             planParameter.add(new ServicePlan((String) plan.get("id"), (String) plan.get("name"), (String) plan.get("description")));
 
             services[0] = new ServiceOffering(name, id, description, bindable, new ArrayList<>());
-        }catch (FileNotFoundException e){
-          e.printStackTrace();
+        }catch (FileNotFoundException | JSONException e){
+            e.printStackTrace();
         }
     }
 
     // GETTER AND SETTER
-
 
     public ServiceOffering[] getServices() {
         return services;
