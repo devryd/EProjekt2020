@@ -24,10 +24,9 @@ public class ServiceCatalog {
 
     // CONSTRUCTOR
 
-    public static void main(String[] args){
-        //public ServiceCatalog(){
+    public ServiceCatalog(){
         try {
-            ServiceOffering[] services = new ServiceOffering[1];
+            services = new ServiceOffering[1];
 
             // InputStream schemaInput = new FileInputStream("model/src/main/java/de/thbin/epro/model/ServiceSchema.json");
             JSONObject parameters = null;// = new JSONObject(new JSONTokener("hjkl"));
