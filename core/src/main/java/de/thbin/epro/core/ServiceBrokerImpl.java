@@ -12,6 +12,8 @@ import javax.websocket.server.PathParam;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 /*
 Fragen:
@@ -136,6 +138,7 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         //gone
         //success
         PollBody responseBody = new PollBody(); //pollbody aus servicebinding ok?
+        //state von jannik holen
         responseBody.setState("succeeded");
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
@@ -156,9 +159,21 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         if (!brokerVersionUsed.equals(version))
             return new ResponseEntity<>("Error: Wrong version used. This broker uses version %s.%n", HttpStatus.PRECONDITION_FAILED);
 
-        //wenn keine fehler und noch nicht vorhanden
-        //erzeuge neue instans (anfrage jannik)
+
+        if (!checkServiceId(body.getService_id()))
+            return new ResponseEntity<>("Given service_id doesn't exist.", HttpStatus.BAD_REQUEST);
+        if (!checkPlanId(body.getPlan_id()))
+            return new ResponseEntity<>("Given plan_id doesn't exist.", HttpStatus.BAD_REQUEST);
+        if (checkInstanceId(instance_id)){
+            if (body.getPlan_id().equals(instance_ids.get(instance_id))){
+                //anfrage zustand jannik
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        //erzeuge neue instanz (anfrage jannik)
         //ProvideResponseBody nötig bzw sinnvolle attribute dafür?
+        instance_ids.put(instance_id, body.getPlan_id());
         return new ResponseEntity<>(HttpStatus.CREATED);
 
     }
@@ -178,8 +193,12 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         if (!brokerVersionUsed.equals(version))
             return new ResponseEntity<>("Error: Wrong version used. This broker uses version %s.%n", HttpStatus.PRECONDITION_FAILED);
         //if instance_id provisioned
+        if (!checkInstanceId(instance_id)){ //oder in progress, jannik anfragen
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         FetchResponseBody responseBody = new FetchResponseBody();
-        //attribute festlegen
+        responseBody.setService_id(catalog.getServices()[0].getId());
+        responseBody.setPlan_id(instance_ids.get(instance_id));
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
         //else...
 
@@ -201,6 +220,11 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             return new ResponseEntity<>("Error: Wrong version used. This broker uses version %s.%n", HttpStatus.PRECONDITION_FAILED);
         //falsche eingabe status code
         //update in progress code
+        if (!checkInstanceId(instance_id))
+            return new ResponseEntity<>("Given instance_id doesn't exist.", HttpStatus.BAD_REQUEST);
+        if (!catalog.getServices()[0].getId().equals(body.getService_id()))
+            return new ResponseEntity<>("This service_id does not exist", HttpStatus.BAD_REQUEST);
+        //jannik nach provision state fragen, und ggf 202 Accepted returnen
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -227,9 +251,26 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         //if service binding id unter der instance id vorhanden, aber mit anderen werten 409
         //422 Unprocessable Entity
         BindResponseBody responseBody = new BindResponseBody();
+        //responseBody.setCredentials(); anfrage jannik
+        if (!checkInstanceId(instance_id))
+            return new ResponseEntity<>("Given instance_id doesn't exist.", HttpStatus.BAD_REQUEST);
+        if (!checkServiceId(body.getService_id()))
+            return new ResponseEntity<>("Invalid service_id", HttpStatus.BAD_REQUEST);
+        if (!checkPlanId(body.getPlan_id()))
+            return new ResponseEntity<>("Invalid plan_id", HttpStatus.BAD_REQUEST);
+        if (checkBindingId(binding_id)){
+            if (body.getPlan_id().equals(instance_ids.get(instance_id))){
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+            //return new ResponseEntity<>("Given binding_id doesn't exist.", HttpStatus.BAD_REQUEST);
+        //if (!checkBindingCorrectInstance(binding_id, instance_id))
+            //return new ResponseEntity<>("The given binding is no binding for the given instance", HttpStatus.BAD_REQUEST);
+
         //if binding vorhanden
-        //responseBody.setCredentials();
-        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+        binding_ids.put(binding_id, instance_id);
+        return new ResponseEntity<>(responseBody, HttpStatus.CREATED); //so, oder nur credentials
         //if binding noch nicht vorhanden 201
 
     }
@@ -251,8 +292,15 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         if (!brokerVersionUsed.equals(version))
             return new ResponseEntity<>("Error: Wrong version used. This broker uses version %s.%n", HttpStatus.PRECONDITION_FAILED);
         //if instance id und service id vorhanden
+        if (!checkInstanceId(instance_id))
+            return new ResponseEntity<>("Given instance_id doesn't exist.", HttpStatus.NOT_FOUND);
+        if (!checkBindingId(binding_id))
+            return new ResponseEntity<>("Given binding_id doesn't exist.", HttpStatus.NOT_FOUND);
+        if (!checkBindingCorrectInstance(binding_id, instance_id))
+            return new ResponseEntity<>("The given binding is no binding for the given instance", HttpStatus.NOT_FOUND);
         FetchBindResponseBody responseBody = new FetchBindResponseBody();
-        //responseBody.setCredentials();
+        //responseBody.setCredentials(); jannik anfragen
+
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
         //bed nicht erfüllt
         //return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -281,6 +329,21 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         //if binding id nicht vorhanden 410 Gone
         //if unbinding am laufen 202 Accepted
         //ansonsten: unbind anfrage schicken
+        if (!checkBindingId(binding_id))
+            return new ResponseEntity<>("Given binding_id does not exist.", HttpStatus.GONE);
+        if (!checkInstanceId(instance_id))
+            return new ResponseEntity<>("Given instance_id does not exist", HttpStatus.GONE);
+        if (!checkBindingCorrectInstance(binding_id, instance_id))
+            return new ResponseEntity<>("The given binding is no binding for the given instance", HttpStatus.GONE);
+        if (!checkServiceId(service_id))
+            return new ResponseEntity<>("Invalid service_id", HttpStatus.BAD_REQUEST);
+        if (!checkInstanceCorrectPlan(instance_id, plan_id)){
+            return new ResponseEntity<>("This service instance does not use the given plan", HttpStatus.BAD_REQUEST);
+        }
+        //unbind state anfrage jannik
+        //unbind anfrage jannik
+        //binding aus map entfernen
+        binding_ids.remove(binding_id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
@@ -304,8 +367,15 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         //if instance id nicht vorhanden 410 gone
         if (!checkInstanceId(instance_id))
             return new ResponseEntity<>(HttpStatus.GONE);
-        //if deletion am laufen 202 accepted
+        if (!checkServiceId(service_id))
+            return new ResponseEntity<>("Invalid service_id", HttpStatus.BAD_REQUEST);
+        if (!checkInstanceCorrectPlan(instance_id, plan_id))
+            return new ResponseEntity<>("This service instance does not use the given plan", HttpStatus.BAD_REQUEST);
+        //if deletion am laufen 202 accepted anfrage jannik
         //ansonsten uninstall anfrage stellen
+
+        removeBindingsByInstance(instance_id);
+        instance_ids.remove(instance_id);
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
@@ -328,6 +398,11 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             return true;
         return false;
     }
+    boolean checkInstanceCorrectPlan(String service_id, String plan_id){
+        if (instance_ids.get(service_id).equals(plan_id))
+            return true;
+        return false;
+    }
     boolean checkServiceId(String service_id){
         ServiceOffering[] catalogArray = catalog.getServices();
         if (catalogArray[0].getId().equals(service_id))
@@ -342,6 +417,9 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
                 return true;
         }
         return false;
+    }
+    void removeBindingsByInstance(String instance_id){
+        binding_ids.values().removeAll(Collections.singleton(instance_id));
     }
 
 }
