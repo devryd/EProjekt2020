@@ -3,11 +3,10 @@
  */
 package de.thbin.epro.core;
 
+import de.thbin.epro.helm.DeploymentSize;
+import de.thbin.epro.helm.HelmDeployer;
 import de.thbin.epro.model.*;
-import de.thbin.epro.helm.*;
 
-import io.fabric8.kubernetes.api.model.WatchEventFluent;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,6 +16,7 @@ import javax.websocket.server.PathParam;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -40,11 +40,11 @@ public class ServiceBrokerImpl {
     /**
      * A map of the instance_ids and the associated service plans
      */
-    Map<String, String> instance_ids; //and chosen serviceplan as value
+    HashMap<String, String> instance_ids; //and chosen serviceplan as value
     /**
      * A map of the binding_ids and the associated instance ids
      */
-    Map<String, String> binding_ids; //and associated instance_id as value
+    HashMap<String, String> binding_ids; //and associated instance_id as value
 
     /**
      * Responsible for helm deployment.
@@ -58,6 +58,8 @@ public class ServiceBrokerImpl {
     public ServiceBrokerImpl() {
         catalog = new ServiceCatalog();
         helmDeployer = new HelmDeployer();
+        instance_ids = new HashMap<>();
+        binding_ids = new HashMap<>();
     }
 
 
@@ -71,7 +73,7 @@ public class ServiceBrokerImpl {
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed
             //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity
-            ) {
+    ) {
         if (brokerVersionUsed == null)
             return new ResponseEntity<>("Error: Header needs to contain a version number.", HttpStatus.BAD_REQUEST);
         if (!brokerVersionUsed.equals(version))
@@ -87,13 +89,13 @@ public class ServiceBrokerImpl {
      * @param plan_id
      * @return ResponseEntity with the state of the last operation ("in progress", "succeeded" or "failed")
      */
-    @RequestMapping (value = "/v2/service_instances/:instance_id/last_operation", method = RequestMethod.GET)
+    @RequestMapping (value = "/v2/service_instances/{instance_id}/last_operation", method = RequestMethod.GET)
     public ResponseEntity<?> pollStateServiceInstance(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
-            //@PathVariable("instance_id") String instance_id,
-            @PathParam("instance_id") String instance_id,
+            @PathVariable("instance_id") String instance_id,
+            //@PathParam("instance_id") String instance_id,
             @RequestParam(name = "service_id") String service_id,
             @RequestParam(name = "plan_id") String plan_id
             //@RequestParam(name = "operation") String operation
@@ -128,15 +130,15 @@ public class ServiceBrokerImpl {
      * @param plan_id
      * @return ResponseEntity with the state of the last operation ("in progress", "succeeded" or "failed")
      */
-    @RequestMapping (value = "/v2/service_instances/:instance_id/service_bindings/:binding_id/last_operation", method = RequestMethod.GET)
+    @RequestMapping (value = "/v2/service_instances/{instance_id}/service_bindings/{binding_id}/last_operation", method = RequestMethod.GET)
     public ResponseEntity<?> pollStateServiceBinding(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
-            //@PathVariable("instance_id") String instance_id,
-            @PathParam("instance_id") String instance_id,
-            //@PathVariable("binding_id") String binding_id,
-            @PathParam("binding_id") String binding_id,
+            @PathVariable("instance_id") String instance_id,
+            //@PathParam("instance_id") String instance_id,
+            @PathVariable("binding_id") String binding_id,
+            //@PathParam("binding_id") String binding_id,
             @RequestParam(name = "service_id") String service_id,
             @RequestParam(name = "plan_id") String plan_id
             //@RequestParam(name = "operation") String operation
@@ -166,13 +168,13 @@ public class ServiceBrokerImpl {
      * @param body
      * @return ResponseEntity with information about the creation of the service instance
      */
-    @RequestMapping (value = "/v2/service_instances/:instance_id", method = RequestMethod.PUT)
+    @RequestMapping (value = "/v2/service_instances/{instance_id}", method = RequestMethod.PUT)
     public ResponseEntity<?> provide(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
-            //@PathVariable("instance_id") String instance_id,
-            @PathParam("instance_id") String instance_id,
+            @PathVariable("instance_id") String instance_id,
+            //@PathParam("instance_id") String instance_id,
             //@RequestParam(name = "accepts_incomplete") boolean accepts_incomplete,
             @RequestBody ProvideRequestBody body
 
@@ -220,13 +222,13 @@ public class ServiceBrokerImpl {
      * @param instance_id
      * @return ResponseEntity with service_id and plan_id associated with the service instance
      */
-    @RequestMapping (value = "/v2/service_instances/:instance_id", method = RequestMethod.GET)
+    @RequestMapping (value = "/v2/service_instances/{instance_id}", method = RequestMethod.GET)
     public ResponseEntity<?> fetchServiceInstance(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             //@RequestHeader("X-Broker-API-Originating-Identity") String originIdentity,
             //@RequestHeader("X-Broker-API-Request-Identity") String requestIdentity,
-            //@PathVariable("instance_id") String instance_id,
-            @PathParam("instance_id") String instance_id
+            @PathVariable("instance_id") String instance_id
+            //@PathParam("instance_id") String instance_id
             //@RequestParam(name = "service_id") String service_id,
             //@RequestParam(name = "plan_id") String plan_id
     ) {
@@ -251,13 +253,13 @@ public class ServiceBrokerImpl {
      * @param body
      * @return ResponseEntity with information about the update
      */
-    @RequestMapping(value = "/v2/service_instances/:instance_id", method = RequestMethod.PATCH)
+    @RequestMapping(value = "/v2/service_instances/{instance_id}", method = RequestMethod.PATCH)
     public ResponseEntity<?> updateServiceInstance(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
-            //@PathVariable("instance_id") String instance_id,
-            @PathParam("instance_id") String instance_id,
+            @PathVariable("instance_id") String instance_id,
+            //@PathParam("instance_id") String instance_id,
             //@RequestParam(name = "accepts_incomplete") boolean accepts_incomplete,
             @RequestBody UpdateRequestBody body
     ) {
@@ -280,15 +282,15 @@ public class ServiceBrokerImpl {
      * @param body
      * @return ResponseEntity with the credentials of the chosen service
      */
-    @RequestMapping(value = "/v2/service_instances/:instance_id/service_bindings/:binding_id", method = RequestMethod.PUT)
+    @RequestMapping(value = "/v2/service_instances/{instance_id}/service_bindings/{binding_id}", method = RequestMethod.PUT)
     public ResponseEntity<?> bindService(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
-            //@PathVariable("instance_id") String instance_id,
-            @PathParam("instance_id") String instance_id,
-            //@PathVariable("binding_id") String binding_id,
-            @PathParam("binding_id") String binding_id,
+            @PathVariable("instance_id") String instance_id,
+            //@PathParam("instance_id") String instance_id,
+            @PathVariable("binding_id") String binding_id,
+            //@PathParam("binding_id") String binding_id,
             //@RequestParam(name = "accepts_incomplete") boolean accepts_incomplete,
             @RequestBody BindRequestBody body
     ) {
@@ -322,7 +324,7 @@ public class ServiceBrokerImpl {
      * @param binding_id
      * @return ResponseEntity with the credentials of the binding
      */
-    @RequestMapping(value = "/v2/service_instances/:instance_id/service_bindings/:binding_id", method = RequestMethod.GET)
+    @RequestMapping(value = "/v2/service_instances/{instance_id}/service_bindings/{binding_id}", method = RequestMethod.GET)
     public ResponseEntity<?> fetchServiceBinding(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
@@ -360,15 +362,15 @@ public class ServiceBrokerImpl {
      * @param plan_id
      * @return ResponseEntity with information about the unbind
      */
-    @RequestMapping(value = "/v2/service_instances/:instance_id/service_bindings/:binding_id", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/v2/service_instances/{instance_id}/service_bindings/{binding_id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> unbind(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
-            //@PathVariable("instance_id") String instance_id,
-            @PathParam("instance_id") String instance_id,
-            //@PathVariable("binding_id") String binding_id,
-            @PathParam("binding_id") String binding_id,
+            @PathVariable("instance_id") String instance_id,
+            //@PathParam("instance_id") String instance_id,
+            @PathVariable("binding_id") String binding_id,
+            //@PathParam("binding_id") String binding_id,
             @RequestParam(name = "service_id") String service_id,
             @RequestParam(name = "plan_id") String plan_id
             //@RequestParam(name = "accepts_incomplete") boolean accepts_incomplete
@@ -391,11 +393,7 @@ public class ServiceBrokerImpl {
         }
         try {
             helmDeployer.uninstallService(instance_id);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (IOException | ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
         binding_ids.remove(binding_id);
@@ -410,13 +408,13 @@ public class ServiceBrokerImpl {
      * @param plan_id
      * @return ResponseEntity with information about the uninstall request
      */
-    @RequestMapping(value = "/v2/service_instances/:instance_id", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/v2/service_instances/{instance_id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deprovide(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
             //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
             //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
-            //@PathVariable("instance_id") String instance_id,
-            @PathParam("instance_id") String instance_id,
+            @PathVariable("instance_id") String instance_id,
+            //@PathParam("instance_id") String instance_id,
             @RequestParam(name = "service_id") String service_id,
             @RequestParam(name = "plan_id") String plan_id
             //@RequestParam(name = "accepts_incomplete") boolean accepts_incomplete

@@ -137,5 +137,4 @@ public class HelmDeployer {
         smallSizeValueMap.put("resources", resources);
         return smallSizeValueMap;
     }
-
 }
