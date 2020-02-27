@@ -1,4 +1,4 @@
-package helm;
+package de.thbin.epro.helm;
 
 /**
  * Enumeration of the three deployment-sizes available
