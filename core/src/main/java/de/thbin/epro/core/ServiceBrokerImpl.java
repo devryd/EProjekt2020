@@ -2,6 +2,7 @@ package de.thbin.epro.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.thbin.epro.model.*;
+import helm.DeploymentSize;
 import helm.HelmDeployer;
 import io.fabric8.kubernetes.api.model.WatchEventFluent;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,8 +60,6 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         catalog = mapper.readValue(new File("../resources/ServiceSchema.json"), ServiceOffering[].class);
         */
         //@autowired michael?
-        System.out.println("gude");
-        catalog = null;
         catalog = new ServiceCatalog();
         helmDeployer = new HelmDeployer();
         //catalog = serviceCatalog.getServices();
@@ -162,8 +161,8 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
     @RequestMapping (value = "/v2/service_instances/:instance_id", method = RequestMethod.PUT)
     public ResponseEntity<?> provide(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
-            @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
-            @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
+            //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
+            //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
             //@PathVariable("instance_id") String instance_id,
             @PathParam("instance_id") String instance_id,
             @RequestParam(name = "accepts_incomplete") boolean accepts_incomplete,
@@ -188,14 +187,22 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         //erzeuge neue instanz (anfrage jannik)
-        switch (body.getPlan_id()){
-            case (""):
+        try{
+            switch (body.getPlan_id()){
+                case ("EproSmP"):
+                    helmDeployer.deployRedis(DeploymentSize.SMALL, instance_id);
                     break;
-            case ("mittel"):
+                case ("EproSdP"):
+                    helmDeployer.deployRedis(DeploymentSize.STANDARD, instance_id);
                     break;
-            case ("gross"):
+                case ("EproClP"):
+                    helmDeployer.deployRedis(DeploymentSize.CLUSTER, instance_id);
                     break;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
         ////ProvideResponseBody nötig bzw sinnvolle attribute dafür?
         instance_ids.put(instance_id, body.getPlan_id());
         return new ResponseEntity<>(HttpStatus.CREATED);
@@ -205,12 +212,12 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
     @RequestMapping (value = "/v2/service_instances/:instance_id", method = RequestMethod.GET)
     public ResponseEntity<?> fetchServiceInstance(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
-            @RequestHeader("X-Broker-API-Originating-Identity") String originIdentity,
-            @RequestHeader("X-Broker-API-Request-Identity") String requestIdentity,
+            //@RequestHeader("X-Broker-API-Originating-Identity") String originIdentity,
+            //@RequestHeader("X-Broker-API-Request-Identity") String requestIdentity,
             //@PathVariable("instance_id") String instance_id,
-            @PathParam("instance_id") String instance_id,
-            @RequestParam(name = "service_id") String service_id,
-            @RequestParam(name = "plan_id") String plan_id
+            @PathParam("instance_id") String instance_id
+            //@RequestParam(name = "service_id") String service_id,
+            //@RequestParam(name = "plan_id") String plan_id
     ) {
         if (brokerVersionUsed == null)
             return new ResponseEntity<>("Error: Header needs to contain a version number.", HttpStatus.BAD_REQUEST);
@@ -231,11 +238,11 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
     @RequestMapping(value = "/v2/service_instances/:instance_id", method = RequestMethod.PATCH)
     public ResponseEntity<?> updateServiceInstance(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
-            @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
-            @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
+            //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
+            //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
             //@PathVariable("instance_id") String instance_id,
             @PathParam("instance_id") String instance_id,
-            @RequestParam(name = "accepts_incomplete") boolean accepts_incomplete,
+            //@RequestParam(name = "accepts_incomplete") boolean accepts_incomplete,
             @RequestBody UpdateRequestBody body
     ) {
         if (brokerVersionUsed == null)
@@ -255,13 +262,13 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
     @RequestMapping(value = "/v2/service_instances/:instance_id/service_bindings/:binding_id", method = RequestMethod.PUT)
     public ResponseEntity<?> bindService(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
-            @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
-            @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
+            //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
+            //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
             //@PathVariable("instance_id") String instance_id,
             @PathParam("instance_id") String instance_id,
             //@PathVariable("binding_id") String binding_id,
             @PathParam("binding_id") String binding_id,
-            @RequestParam(name = "accepts_incomplete") boolean accepts_incomplete,
+            //@RequestParam(name = "accepts_incomplete") boolean accepts_incomplete,
             @RequestBody BindRequestBody body
     ) {
         if (brokerVersionUsed == null)
@@ -302,15 +309,16 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
     @RequestMapping(value = "/v2/service_instances/:instance_id/service_bindings/:binding_id", method = RequestMethod.GET)
     public ResponseEntity<?> fetchServiceBinding(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
-            @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
-            @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
+            //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
+            //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
             //@PathVariable("instance_id") String instance_id,
             @PathParam("instance_id") String instance_id,
             //@PathVariable("binding_id") String binding_id,
-            @PathParam("binding_id") String binding_id,
-            @RequestParam(name = "service_id") String service_id, //query string field da rein?
-            @RequestParam(name = "plan_id") String plan_id
+            @PathParam("binding_id") String binding_id
+            //@RequestParam(name = "service_id") String service_id, //query string field da rein?
+            //@RequestParam(name = "plan_id") String plan_id
     ) {
+        //not implemented yet
         if (brokerVersionUsed == null)
             return new ResponseEntity<>("Error: Header needs to contain a version number.", HttpStatus.BAD_REQUEST);
         if (!brokerVersionUsed.equals(version))
@@ -334,15 +342,15 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
     @RequestMapping(value = "/v2/service_instances/:instance_id/service_bindings/:binding_id", method = RequestMethod.DELETE)
     public ResponseEntity<?> unbind(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
-            @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
-            @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
+            //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
+            //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
             //@PathVariable("instance_id") String instance_id,
             @PathParam("instance_id") String instance_id,
             //@PathVariable("binding_id") String binding_id,
             @PathParam("binding_id") String binding_id,
             @RequestParam(name = "service_id") String service_id,
-            @RequestParam(name = "plan_id") String plan_id,
-            @RequestParam(name = "accepts_incomplete") boolean accepts_incomplete
+            @RequestParam(name = "plan_id") String plan_id
+            //@RequestParam(name = "accepts_incomplete") boolean accepts_incomplete
     ) {
         if (brokerVersionUsed == null)
             return new ResponseEntity<>("Error: Header needs to contain a version number.", HttpStatus.BAD_REQUEST);
@@ -367,6 +375,11 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         //unbind state anfrage jannik
         //unbind anfrage jannik
         //binding aus map entfernen
+        try {
+            helmDeployer.uninstallService(instance_id);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         binding_ids.remove(binding_id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -374,13 +387,13 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
     @RequestMapping(value = "/v2/service_instances/:instance_id", method = RequestMethod.DELETE)
     public ResponseEntity<?> deprovide(
             @RequestHeader("X-Broker-API-Version") String brokerVersionUsed,
-            @RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
-            @RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
+            //@RequestHeader ("X-Broker-API-Originating-Identity") String originIdentity,
+            //@RequestHeader ("X-Broker-API-Request-Identity") String requestIdentity,
             //@PathVariable("instance_id") String instance_id,
             @PathParam("instance_id") String instance_id,
             @RequestParam(name = "service_id") String service_id,
-            @RequestParam(name = "plan_id") String plan_id,
-            @RequestParam(name = "accepts_incomplete") boolean accepts_incomplete
+            @RequestParam(name = "plan_id") String plan_id
+            //@RequestParam(name = "accepts_incomplete") boolean accepts_incomplete
     ) {
         if (brokerVersionUsed == null)
             return new ResponseEntity<>("Error: Header needs to contain a version number.", HttpStatus.BAD_REQUEST);
