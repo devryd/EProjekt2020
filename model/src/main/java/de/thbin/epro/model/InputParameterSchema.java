@@ -5,9 +5,10 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.json.JSONArray;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 
 public class InputParameterSchema {
 
@@ -19,8 +20,19 @@ public class InputParameterSchema {
 
     public InputParameterSchema(String schema) {
         try {
-            InputStream schemaInput = new FileInputStream("src/main/java/ServiceSchema.json");
-            parameters = new JSONObject(new JSONTokener(schemaInput));
+
+            // InputStream schemaInput = new FileInputStream("model/src/main/java/de/thbin/epro/model/ServiceSchema.json");
+            parameters = null; //new JSONObject(new JSONTokener("src/main/java/ServiceSchema.json"));
+
+            FileInputStream stream = new FileInputStream(new File("model/src/main/java/de/thbin/epro/model/ServiceSchema.json"));
+            try {
+                FileChannel fc = stream.getChannel();
+                MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
+                /* Instead of using default, pass in a decoder. */
+                parameters =new JSONObject(Charset.defaultCharset().decode(bb).toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             JSONArray js = (JSONArray) parameters.get("services");
             JSONObject subjects = (JSONObject) js.get(0);   // content of services
@@ -49,10 +61,15 @@ public class InputParameterSchema {
         }
     }
 
+    // GETTER AND SETTER
 
+    public JSONObject getParameters() {
+        return parameters;
+    }
 
-
-
+    public void setParameters(JSONObject parameters) {
+        this.parameters = parameters;
+    }
 
 
     //IGNORE - TESTING ZONE//
