@@ -2,6 +2,10 @@ package de.thbin.epro.model;
 
 import java.util.ArrayList;
 
+/**
+ * ServiceOffering contains information for one service and its ServicePlans.
+ * @author Michael Kunz
+ * */
 public class ServiceOffering {
 
     // must have

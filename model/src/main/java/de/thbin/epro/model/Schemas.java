@@ -3,7 +3,10 @@ package de.thbin.epro.model;
 public class Schemas {
 
     // optional
-
+    /**
+     * Schemas contains the schemas for an service instance and a service binding for one service plan.
+     * @author Michael Kunz
+     * */
     private ServiceInstanceSchema service_instance;
     private ServiceBindingSchema service_binding;
 

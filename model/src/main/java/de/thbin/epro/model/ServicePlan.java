@@ -1,5 +1,10 @@
 package de.thbin.epro.model;
 
+/**
+ * ServicePlan contains the information for one plan and the schemas.
+ * MaintenanceInfo is not used in this version.
+ * @author Michael Kunz
+ * */
 public class ServicePlan {
 
     // must have

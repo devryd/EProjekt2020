@@ -1,5 +1,9 @@
 package de.thbin.epro.model;
 
+/**
+ * MaintenanceInfo is not used in this version.
+ * @author Michael Kunz
+ * */
 public class MaintenanceInfo {
 
     //  must have

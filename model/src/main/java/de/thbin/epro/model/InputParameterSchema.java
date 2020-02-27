@@ -10,6 +10,10 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 
+/**
+ * InputParameterSchema provides information to ServiceInstaceSchema and ServiceBindingSchema from the ServiceSchema.json file.
+ * @author Michael Kunz
+ * */
 public class InputParameterSchema {
 
     // JSON schema object
