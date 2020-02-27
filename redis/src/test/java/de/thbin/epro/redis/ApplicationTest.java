@@ -65,9 +65,9 @@ public class ApplicationTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
-        //ResponseEntity<?> responseEntity = serviceBroker.getServiceCatalog(brokerVersion, originIdentity, requestIdentity);
+        ResponseEntity<?> responseEntity = serviceBroker.getServiceCatalog(brokerVersion);
 
-        //assertTrue(isEqualTo(responseEntity.getStatusCodeValue(), 200));
+        assertTrue(isEqualTo(responseEntity.getStatusCodeValue(), 200));
     }
 
     // test for rest call of /v2/catalog

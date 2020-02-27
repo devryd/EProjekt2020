@@ -1,5 +1,9 @@
 package de.thbin.epro.model;
 
+/**
+ * ServiceBindingSchema contains information for binding an instance.
+ * @author Michael Kunz
+ * */
 public class ServiceBindingSchema {
 
     // optional
