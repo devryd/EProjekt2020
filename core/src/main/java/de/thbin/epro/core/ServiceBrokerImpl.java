@@ -2,6 +2,7 @@ package de.thbin.epro.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.thbin.epro.model.*;
+import helm.HelmDeployer;
 import io.fabric8.kubernetes.api.model.WatchEventFluent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
 /*
 Fragen:
 json datei an object mappen?
@@ -37,7 +39,7 @@ schema in json datei nicht zwingend notwendig
 
 @Controller
 public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerInterface
-
+    //HelmDeployer depl;
     //ersetzen durch ServiceCatalog
     ServiceCatalog catalog;// = new ServiceCatalog();
 
@@ -50,8 +52,8 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
     stattdessen jsonobject?
     oder ganze klasse außen rum statt array?
      */
-    @Autowired
-    //HelmDeployer helmDeployer;
+    //@Autowired
+    HelmDeployer helmDeployer;
     public ServiceBrokerImpl() {
         /*ObjectMapper mapper = new ObjectMapper();
         catalog = mapper.readValue(new File("../resources/ServiceSchema.json"), ServiceOffering[].class);
@@ -60,6 +62,7 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         System.out.println("gude");
         catalog = null;
         catalog = new ServiceCatalog();
+        helmDeployer = new HelmDeployer();
         //catalog = serviceCatalog.getServices();
         //geht noch nicht, weil servicecatalog im falschen package
     }
@@ -102,6 +105,7 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             return new ResponseEntity<>("Error: Wrong version used. This broker uses version %s.%n", HttpStatus.PRECONDITION_FAILED);
 
 
+
         PollBody responseBody = new PollBody();
         //if abfragen...
         //bad request und gone
@@ -116,6 +120,7 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         //optional ende
         //success, noch die zwei anderen states sinnvoll, dafür anfrage an jannik
         responseBody.setState("succeeded");
+        responseBody.setDescription("not implemented yet");
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
@@ -150,6 +155,7 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
         PollBody responseBody = new PollBody(); //pollbody aus servicebinding ok?
         //state von jannik holen
         responseBody.setState("succeeded");
+        responseBody.setDescription("not implemented yet");
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
@@ -182,7 +188,15 @@ public class ServiceBrokerImpl { //implements de.thbin.epro.core.ServiceBrokerIn
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         //erzeuge neue instanz (anfrage jannik)
-        //ProvideResponseBody nötig bzw sinnvolle attribute dafür?
+        switch (body.getPlan_id()){
+            case (""):
+                    break;
+            case ("mittel"):
+                    break;
+            case ("gross"):
+                    break;
+        }
+        ////ProvideResponseBody nötig bzw sinnvolle attribute dafür?
         instance_ids.put(instance_id, body.getPlan_id());
         return new ResponseEntity<>(HttpStatus.CREATED);
 
