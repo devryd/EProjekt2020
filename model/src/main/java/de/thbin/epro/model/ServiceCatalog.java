@@ -5,10 +5,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-
-import org.json.*;
-import org.junit.Test;
-
 import java.io.*;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
@@ -36,18 +32,17 @@ public class ServiceCatalog {
             // InputStream schemaInput = new FileInputStream("model/src/main/java/de/thbin/epro/model/ServiceSchema.json");
             JSONObject parameters = null;// = new JSONObject(new JSONTokener("hjkl"));
 
-
+            // reading the json file for collecting all informations
             FileInputStream stream = new FileInputStream(new File("model/src/main/java/de/thbin/epro/model/ServiceSchema.json"));
             try {
                 FileChannel fc = stream.getChannel();
                 MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-                /* Instead of using default, pass in a decoder. */
                 parameters =new JSONObject(Charset.defaultCharset().decode(bb).toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-
+            //entering the json file
             JSONArray js = (JSONArray) parameters.get("services");
             JSONObject subjects = (JSONObject) js.get(0);   // content of services
 

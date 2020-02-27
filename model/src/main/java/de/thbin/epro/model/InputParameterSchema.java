@@ -28,22 +28,24 @@ public class InputParameterSchema {
             // InputStream schemaInput = new FileInputStream("model/src/main/java/de/thbin/epro/model/ServiceSchema.json");
             parameters = null; //new JSONObject(new JSONTokener("src/main/java/ServiceSchema.json"));
 
+            // reading the json file for collecting all informations
             FileInputStream stream = new FileInputStream(new File("model/src/main/java/de/thbin/epro/model/ServiceSchema.json"));
             try {
                 FileChannel fc = stream.getChannel();
                 MappedByteBuffer bb = fc.map(FileChannel.MapMode.READ_ONLY, 0, fc.size());
-                /* Instead of using default, pass in a decoder. */
                 parameters =new JSONObject(Charset.defaultCharset().decode(bb).toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
+            // entering the json file
             JSONArray js = (JSONArray) parameters.get("services");
-            JSONObject subjects = (JSONObject) js.get(0);   // content of services
-            JSONArray plans = (JSONArray) subjects.get(("plans")); // 0 small - 1 standard - 2 cluster
-            subjects = (JSONObject) plans.get(0);
-            subjects = (JSONObject) subjects.get("schemas");
+            JSONObject subjects = (JSONObject) js.get(0);   // content of services (only 1 here)
+            JSONArray plans = (JSONArray) subjects.get(("plans")); // content of plans
+            subjects = (JSONObject) plans.get(0); // 0 small - 1 standard - 2 cluster
+            subjects = (JSONObject) subjects.get("schemas"); //content of schemas
 
+            // selecting the wanted schema and safe it
             switch ((schema)) {
                 case "si_create":
                     subjects = (JSONObject) subjects.get("service_instance");
